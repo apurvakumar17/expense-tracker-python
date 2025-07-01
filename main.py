@@ -53,6 +53,7 @@ def open_signup_window():
     signup_window = tk.Toplevel()
     signup_window.title("Sign Up")
     signup_window.geometry("320x220")
+    signup_window.resizable(False,False)
 
     # ----- Create a container frame -----
     container = tk.Frame(signup_window)
