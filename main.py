@@ -4,6 +4,8 @@ from PIL import Image, ImageTk
 import hashlib
 import os
 
+global username
+
 # -------------------- File Setup --------------------
 USER_FILE = "users.txt"
 if not os.path.exists(USER_FILE):
@@ -88,12 +90,36 @@ def open_signup_window():
     ttk.Button(container, text="Signup", command=signup_action).grid(row=3, column=0, columnspan=2, pady=15)
 
 
+def DepositMoney():
+    userFile=open(f"{username_entry}_details.txt",'w')
+
+def addMoney():
+    addMoneyWindow=tk.Tk()
+    addMoneyWindow.geometry("400x400")
+
+    addLabel=tk.Label(addMoneyWindow,text="Enter Amount ",font=("Arial", 12))
+    addLabel.grid(row=0,column=0)
+
+    addEntry=tk.Entry(addMoneyWindow,font=("Arial", 12))
+    addEntry.grid(row=1,column=0)
+
+    addBtn=tk.Button(addMoneyWindow,text="Deposit",font=("Arial", 12),command=DepositMoney)
+    addBtn.grid(row=2,column=0)
+
+    addMoneyWindow.mainloop()
+
+
 # -------------------- Welcome Window --------------------
 def open_welcome_window(username):
     welcome_window = tk.Toplevel()
     welcome_window.title("Welcome")
-    welcome_window.geometry("250x100")
+    welcome_window.geometry("1200x700")
+    welcome_window.resizable(False,False)
     ttk.Label(welcome_window, text=f"Welcome, {username}!", font=("Arial", 12)).pack(pady=30)
+
+#---------Creating add money option
+    addMoneyBtn=tk.Button(welcome_window,text="Add Money",font=("Arial", 12),command=addMoney)
+    addMoneyBtn.place(x=100,y=100)
 
 # -------------------- Main UI --------------------
 root = tk.Tk()
