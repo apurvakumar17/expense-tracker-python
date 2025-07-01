@@ -99,6 +99,7 @@ def open_welcome_window(username):
 root = tk.Tk()
 root.title("Login Page")
 root.geometry("800x400")
+root.resizable(False,False)
 
 # Left: Image
 left_frame = tk.Frame(root, width=400, height=400)
