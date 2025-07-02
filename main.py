@@ -186,21 +186,43 @@ def view_transactions(username):
         ttk.Label(win, text=f"{date} - ₹{amount} ({desc} - {cat})").pack()
 
 def DrawSummary():
-    # Fetch expense data from the database
-    cursor.execute("SELECT category, SUM(amount) FROM transactions WHERE type='expense' GROUP BY category")
-    data = cursor.fetchall()
+    # Fetch income data
+    cursor.execute("SELECT date, SUM(amount) FROM transactions WHERE type='income' GROUP BY date ORDER BY date")
+    income_data = cursor.fetchall()
 
-    if not data:
-        messagebox.showinfo("Info", "No expense data to display.")
+    # Fetch expense data
+    cursor.execute("SELECT date, SUM(amount) FROM transactions WHERE type='expense' GROUP BY date ORDER BY date")
+    expense_data = cursor.fetchall()
+
+    if not income_data and not expense_data:
+        messagebox.showinfo("Info", "No data to display.")
         return
 
-    categories = [row[0] if row[0] else "Uncategorized" for row in data]
-    amounts = [row[1] for row in data]
+    # Prepare data for plotting
+    income_dates = [row[0] for row in income_data]
+    income_amounts = [row[1] for row in income_data]
 
-    plt.figure(figsize=(6, 6))
-    plt.pie(amounts, labels=categories, autopct='%1.1f%%', startangle=140)
-    plt.title("Expense Distribution by Category")
+    expense_dates = [row[0] for row in expense_data]
+    expense_amounts = [row[1] for row in expense_data]
+
+    # Create figure
+    plt.figure(figsize=(10, 6))
+
+    # Plot income
+    if income_data:
+        plt.plot(income_dates, income_amounts, label="Income", marker='o', color="green")
+    # Plot expense
+    if expense_data:
+        plt.plot(expense_dates, expense_amounts, label="Expense", marker='o', color="red")
+
+    plt.title("Income & Expense Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Amount (₹)")
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.tight_layout()
     plt.show()
+
 
 
 def open_dashboard_window(username):
