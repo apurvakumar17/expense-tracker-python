@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
 import hashlib
 import os
@@ -184,6 +185,24 @@ def view_transactions(username):
     for amount, desc, cat, date in load_transactions(username, "expense"):
         ttk.Label(win, text=f"{date} - ₹{amount} ({desc} - {cat})").pack()
 
+def DrawSummary():
+    # Fetch expense data from the database
+    cursor.execute("SELECT category, SUM(amount) FROM transactions WHERE type='expense' GROUP BY category")
+    data = cursor.fetchall()
+
+    if not data:
+        messagebox.showinfo("Info", "No expense data to display.")
+        return
+
+    categories = [row[0] if row[0] else "Uncategorized" for row in data]
+    amounts = [row[1] for row in data]
+
+    plt.figure(figsize=(6, 6))
+    plt.pie(amounts, labels=categories, autopct='%1.1f%%', startangle=140)
+    plt.title("Expense Distribution by Category")
+    plt.show()
+
+
 def open_dashboard_window(username):
     win = tk.Tk()
     win.title("Dashboard")
@@ -210,6 +229,8 @@ def open_dashboard_window(username):
     ttk.Button(btn_frame, text="📄 View Transactions", command=lambda: view_transactions(username)).grid(row=1, column=0, columnspan=2, pady=10)
 
     ttk.Button(win, text="🚪 Logout", command=win.destroy).pack(side="bottom", pady=20)
+
+    ttk.Button(win,text="Summary",command=DrawSummary).pack(side="left",pady=1,padx=250)
 
 # ---------- Login ----------
 def login_action():
