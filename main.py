@@ -132,9 +132,9 @@ def open_add_income(username, balance_var):
             amount = float(amount_entry.get())
             desc = desc_entry.get()
             save_transaction(username, "income", amount, desc)
-            messagebox.showinfo("Saved", "Income added!")
             win.destroy()
             update_balance(username, balance_var)
+            messagebox.showinfo("Saved", "Income added!")
         except ValueError:
             messagebox.showerror("Error", "Invalid amount.")
 
@@ -163,9 +163,9 @@ def open_add_expense(username, balance_var):
             desc = desc_entry.get()
             category = category_entry.get()
             save_transaction(username, "expense", amount, desc, category)
-            messagebox.showinfo("Saved", "Expense added!")
             win.destroy()
             update_balance(username, balance_var)
+            messagebox.showinfo("Saved", "Expense added!")
         except ValueError:
             messagebox.showerror("Error", "Invalid amount.")
 
@@ -193,8 +193,12 @@ def open_dashboard_window(username):
     tk.Label(win, text=f"Welcome, {username}!", font=("Arial", 18, "bold"), bg="#f2f2f2").pack(pady=20)
 
     balance_var = tk.StringVar()
-    tk.Label(win, text="Current Balance:", font=("Arial", 14), bg="#f2f2f2").pack()
-    tk.Label(win, textvariable=balance_var, font=("Arial", 16, "bold"), fg="green", bg="#f2f2f2").pack(pady=5)
+    
+    # Show label and value side-by-side
+    balance_frame = tk.Frame(win, bg="#f2f2f2")
+    balance_frame.pack()
+    tk.Label(balance_frame, text="Current Balance:", font=("Arial", 14), bg="#f2f2f2").grid(row=0, column=0)
+    tk.Label(balance_frame, textvariable=balance_var, font=("Arial", 14, "bold"), fg="green", bg="#f2f2f2").grid(row=0, column=1, padx=10)
 
     update_balance(username, balance_var)
 
@@ -217,8 +221,8 @@ def login_action():
         return
 
     if validate_user(username, password):
-        open_dashboard_window(username)
         root.destroy()
+        open_dashboard_window(username)
     else:
         messagebox.showerror("Error", "Invalid credentials")
 
