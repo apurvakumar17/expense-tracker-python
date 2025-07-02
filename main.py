@@ -187,11 +187,11 @@ def view_transactions(username):
 
 def DrawSummary():
     # Fetch income data
-    cursor.execute("SELECT date, SUM(amount) FROM transactions WHERE type='income' GROUP BY date ORDER BY date")
+    cursor.execute("SELECT date, amount FROM transactions WHERE type='income' ")
     income_data = cursor.fetchall()
 
     # Fetch expense data
-    cursor.execute("SELECT date, SUM(amount) FROM transactions WHERE type='expense' GROUP BY date ORDER BY date")
+    cursor.execute("SELECT date, amount FROM transactions WHERE type='expense' ")
     expense_data = cursor.fetchall()
 
     if not income_data and not expense_data:
@@ -210,10 +210,10 @@ def DrawSummary():
 
     # Plot income
     if income_data:
-        plt.plot(income_dates, income_amounts, label="Income", marker='o', color="green")
+        plt.bar(income_dates, income_amounts, label="Income", color="green")
     # Plot expense
     if expense_data:
-        plt.plot(expense_dates, expense_amounts, label="Expense", marker='o', color="red")
+        plt.bar(expense_dates,expense_amounts, label="Expense", color="red")
 
     plt.title("Income & Expense Over Time")
     plt.xlabel("Date")
