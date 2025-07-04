@@ -224,7 +224,42 @@ def getFullSummary():
     plt.show()
 
 def getFilterSummary():
-    
+    fromDate=tk.fromEntry.get()
+    toDate=tk.toEntry.get()
+    if not fromDate or not toDate:
+        messagebox.showerror("Error","Please enter both dates")
+
+    cursor.execute("SELECT date, amount FROM transactions WHERE type='income' and date between ? and ? ",(fromDate,toDate))
+    income_data = cursor.fetchall()
+
+    # Fetch expense data
+    cursor.execute("SELECT date, amount FROM transactions WHERE type='expense' and date between ? and ? ",(fromDate,toDate) )
+    expense_data = cursor.fetchall()
+
+    # Prepare data for plotting
+    income_dates = [row[0] for row in income_data]
+    income_amounts = [row[1] for row in income_data]
+
+    expense_dates = [row[0] for row in expense_data]
+    expense_amounts = [row[1] for row in expense_data]
+
+    # Create figure
+    plt.figure(figsize=(10, 6))
+
+    # Plot income
+    if income_data:
+        plt.bar(income_dates, income_amounts, label="Income", color="green")
+    # Plot expense
+    if expense_data:
+        plt.bar(expense_dates,expense_amounts, label="Expense", color="red")
+
+    plt.title("Income & Expense Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Amount (₹)")
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
 
 def DrawSummary():
