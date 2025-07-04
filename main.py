@@ -178,19 +178,6 @@ def open_add_expense(username, balance_var):
 
     ttk.Button(win, text="Save", command=save).pack(pady=10)
 
-# def view_transactions(username):
-#     win = tk.Tk()
-#     win.title("Transactions")
-#     win.geometry("400x300")
-
-#     ttk.Label(win, text="Incomes", font=("Arial", 12, "bold")).pack()
-#     for amount, desc, _, date in load_transactions(username, "income"):
-#         ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
-
-#     ttk.Label(win, text="Expenses", font=("Arial", 12, "bold")).pack(pady=(10, 0))
-#     for amount, desc, cat, date in load_transactions(username, "expense"):
-#         ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
-
 def view_transactions(username):
     win = tk.Toplevel()
     win.title("Transactions")
@@ -254,11 +241,11 @@ def view_transactions(username):
 
 def getFullSummary():
     # Fetch income data
-    cursor.execute("SELECT date, amount FROM transactions WHERE type='income' ")
+    cursor.execute("SELECT date, amount FROM transactions WHERE type='income' ORDER BY date ASC")
     income_data = cursor.fetchall()
 
     # Fetch expense data
-    cursor.execute("SELECT date, amount FROM transactions WHERE type='expense' ")
+    cursor.execute("SELECT date, amount FROM transactions WHERE type='expense' ORDER BY date ASC")
     expense_data = cursor.fetchall()
 
     if not income_data and not expense_data:
@@ -364,37 +351,42 @@ def exportToCSV():
     writer.writerow(["Id", "Username", "Type", "Amount", "Description","Category","Date"])
     writer.writerows(data)
 
-
 def open_dashboard_window(username):
-    win = tk.Tk()
+    win = tk.Tk()  
     win.title("Dashboard")
-    win.geometry("600x400")
+    win.geometry("600x450")
     win.configure(bg="#f2f2f2")
+    win.resizable(False, False)
 
+    # ---------- Welcome Message ----------
     tk.Label(win, text=f"Welcome, {username}!", font=("Arial", 18, "bold"), bg="#f2f2f2").pack(pady=20)
 
+    # ---------- Current Balance ----------
     balance_var = tk.StringVar()
-    
-    # Show label and value side-by-side
     balance_frame = tk.Frame(win, bg="#f2f2f2")
     balance_frame.pack()
-    tk.Label(balance_frame, text="Current Balance:", font=("Arial", 14), bg="#f2f2f2").grid(row=0, column=0)
-    tk.Label(balance_frame, textvariable=balance_var, font=("Arial", 14, "bold"), fg="green", bg="#f2f2f2").grid(row=0, column=1, padx=10)
-
+    tk.Label(balance_frame, text="Current Balance:", font=("Arial", 14), bg="#f2f2f2").grid(row=0, column=0, sticky="e")
+    tk.Label(balance_frame, textvariable=balance_var, font=("Arial", 14, "bold"), fg="green", bg="#f2f2f2").grid(row=0, column=1, padx=10, sticky="w")
     update_balance(username, balance_var)
 
+    # ---------- Button Group ----------
     btn_frame = tk.Frame(win, bg="#f2f2f2")
-    btn_frame.pack(pady=20)
+    btn_frame.pack(pady=30)
 
-    ttk.Button(btn_frame, text="➕ Add Income", command=lambda: open_add_income(username, balance_var)).grid(row=0, column=0, padx=10)
-    ttk.Button(btn_frame, text="➖ Add Expense", command=lambda: open_add_expense(username, balance_var)).grid(row=0, column=1, padx=10)
-    ttk.Button(btn_frame, text="📄 View Transactions", command=lambda: view_transactions(username)).grid(row=1, column=0, columnspan=2, pady=10)
+    ttk.Button(btn_frame, text="➕ Add Income", width=20, command=lambda: open_add_income(username, balance_var)).grid(row=0, column=0, padx=10, pady=5)
+    ttk.Button(btn_frame, text="➖ Add Expense", width=20, command=lambda: open_add_expense(username, balance_var)).grid(row=0, column=1, padx=10, pady=5)
+    ttk.Button(btn_frame, text="📄 View Transactions", width=42, command=lambda: view_transactions(username)).grid(row=1, column=0, columnspan=2, pady=10)
 
-    ttk.Button(win, text="🚪 Logout", command=win.destroy).pack(side="bottom", pady=20)
+    # ---------- Extra Controls ----------
+    bottom_btn_frame = tk.Frame(win, bg="#f2f2f2")
+    bottom_btn_frame.pack(pady=10)
 
-    ttk.Button(win,text="Summary",command=DrawSummary).pack(side="left",pady=1,padx=250)
+    ttk.Button(bottom_btn_frame, text="📈 Summary", width=20, command=DrawSummary).grid(row=0, column=0, padx=20)
+    ttk.Button(bottom_btn_frame, text="📁 Export to CSV", width=20, command=exportToCSV).grid(row=0, column=1, padx=20)
 
-    ttk.Button(win,text="Export to CSV",command=exportToCSV).place(x=250,y=200)
+    # ---------- Logout ----------
+    ttk.Button(win, text="🚪 Logout", command=win.destroy).pack(side="bottom", pady=15)
+
 
 # ---------- Login ----------
 def login_action():
