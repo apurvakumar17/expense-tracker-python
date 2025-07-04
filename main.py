@@ -55,8 +55,9 @@ def validate_user(username, password):
     return False
 
 # ---------- Transactions ----------
-def save_transaction(username, txn_type, amount, description, category=None):
-    date = datetime.date.today().isoformat()
+def save_transaction(username, txn_type, amount, description, date, category=None):
+    # date = datetime.date.today().isoformat()
+    # print(date) ##2025-07-04
     cursor.execute(
         "INSERT INTO transactions (username, type, amount, description, category, date) VALUES (?, ?, ?, ?, ?, ?)",
         (username, txn_type, amount, description, category, date)
@@ -65,7 +66,7 @@ def save_transaction(username, txn_type, amount, description, category=None):
 
 def load_transactions(username, txn_type):
     cursor.execute(
-        "SELECT amount, description, category, date FROM transactions WHERE username=? AND type=?",
+        "SELECT amount, description, category, date FROM transactions WHERE username=? AND type=? ORDER BY date ASC",
         (username, txn_type)
     )
     return cursor.fetchall()
@@ -129,11 +130,15 @@ def open_add_income(username, balance_var):
     desc_entry = ttk.Entry(win)
     desc_entry.pack()
 
+    ttk.Label(win, text = "Date:").pack(pady=5)
+    date_entry = DateEntry(win, width=15, background='darkblue', foreground='white', date_pattern='yyyy-mm-dd')
+    date_entry.pack()
+
     def save():
         try:
             amount = float(amount_entry.get())
             desc = desc_entry.get()
-            save_transaction(username, "income", amount, desc)
+            save_transaction(username, "income", amount, desc, date_entry.get())
             win.destroy()
             update_balance(username, balance_var)
             messagebox.showinfo("Saved", "Income added!")
@@ -155,16 +160,15 @@ def open_add_expense(username, balance_var):
     desc_entry = ttk.Entry(win)
     desc_entry.pack()
 
-    ttk.Label(win, text="Category:").pack(pady=5)
-    category_entry = ttk.Entry(win)
-    category_entry.pack()
+    ttk.Label(win, text = "Date:").pack(pady=5)
+    date_entry = DateEntry(win, width=15, background='darkblue', foreground='white', date_pattern='yyyy-mm-dd')
+    date_entry.pack()
 
     def save():
         try:
             amount = float(amount_entry.get())
             desc = desc_entry.get()
-            category = category_entry.get()
-            save_transaction(username, "expense", amount, desc, category)
+            save_transaction(username, "expense", amount, desc, date_entry.get())
             win.destroy()
             update_balance(username, balance_var)
             messagebox.showinfo("Saved", "Expense added!")
@@ -184,7 +188,7 @@ def view_transactions(username):
 
     ttk.Label(win, text="Expenses", font=("Arial", 12, "bold")).pack(pady=(10, 0))
     for amount, desc, cat, date in load_transactions(username, "expense"):
-        ttk.Label(win, text=f"{date} - ₹{amount} ({desc} - {cat})").pack()
+        ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
 
 def getFullSummary():
     # Fetch income data
