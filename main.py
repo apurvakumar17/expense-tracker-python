@@ -7,6 +7,7 @@ import os
 import sqlite3
 import datetime
 from tkcalendar import DateEntry
+import csv
 
 # ---------- SQLite Setup ----------
 conn = sqlite3.connect("expenses.db")
@@ -355,7 +356,13 @@ def DrawSummary():
 
     ttk.Button(container, text="🔍 Filter Summary", command=get_filtered).pack(pady=15)
     
-
+def exportToCSV():
+    cursor.execute("Select * from transactions")
+    data=cursor.fetchall()
+    file=open("Data.csv",'w',newline="", encoding="utf-8")
+    writer=csv.writer(file)
+    writer.writerow(["Id", "Username", "Type", "Amount", "Description","Category","Date"])
+    writer.writerows(data)
 
 
 def open_dashboard_window(username):
@@ -386,6 +393,8 @@ def open_dashboard_window(username):
     ttk.Button(win, text="🚪 Logout", command=win.destroy).pack(side="bottom", pady=20)
 
     ttk.Button(win,text="Summary",command=DrawSummary).pack(side="left",pady=1,padx=250)
+
+    ttk.Button(win,text="Export to CSV",command=exportToCSV).place(x=250,y=200)
 
 # ---------- Login ----------
 def login_action():
