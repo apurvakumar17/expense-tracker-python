@@ -177,18 +177,79 @@ def open_add_expense(username, balance_var):
 
     ttk.Button(win, text="Save", command=save).pack(pady=10)
 
+# def view_transactions(username):
+#     win = tk.Tk()
+#     win.title("Transactions")
+#     win.geometry("400x300")
+
+#     ttk.Label(win, text="Incomes", font=("Arial", 12, "bold")).pack()
+#     for amount, desc, _, date in load_transactions(username, "income"):
+#         ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
+
+#     ttk.Label(win, text="Expenses", font=("Arial", 12, "bold")).pack(pady=(10, 0))
+#     for amount, desc, cat, date in load_transactions(username, "expense"):
+#         ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
+
 def view_transactions(username):
-    win = tk.Tk()
+    win = tk.Toplevel()
     win.title("Transactions")
-    win.geometry("400x300")
+    win.geometry("600x480")
+    # win.resizable(False, False)
+    win.configure(bg="#f9f9f9")
 
-    ttk.Label(win, text="Incomes", font=("Arial", 12, "bold")).pack()
+    #Incomes
+    ttk.Label(win, text="Income", font=("Arial", 16, "bold"), background="#f9f9f9").pack(pady=10)
+
+    tree_frame1 = ttk.Frame(win)
+    tree_frame1.pack(fill="both", expand=True, padx=10, pady=10)
+
+    tree_scroll1 = ttk.Scrollbar(tree_frame1)
+    tree_scroll1.pack(side="right", fill="y")
+
+    tree1 = ttk.Treeview(tree_frame1, yscrollcommand=tree_scroll1.set, columns=("type", "date", "amount", "desc"), show="headings", height=7)
+    tree1.pack(fill="both", expand=True)
+    tree_scroll1.config(command=tree1.yview)
+
+    tree1.heading("type", text="Type")
+    tree1.heading("date", text="Date")
+    tree1.heading("amount", text="Amount (₹)")
+    tree1.heading("desc", text="Description")
+
+    tree1.column("type", width=80, anchor="center")
+    tree1.column("date", width=100, anchor="center")
+    tree1.column("amount", width=100, anchor="center")
+    tree1.column("desc", width=200, anchor="w")
+
     for amount, desc, _, date in load_transactions(username, "income"):
-        ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
+        tree1.insert("", "end", values=("Income", date, f"₹{amount:.2f}", desc))
 
-    ttk.Label(win, text="Expenses", font=("Arial", 12, "bold")).pack(pady=(10, 0))
-    for amount, desc, cat, date in load_transactions(username, "expense"):
-        ttk.Label(win, text=f"{date} - ₹{amount} ({desc})").pack()
+
+    #Expenses
+    ttk.Label(win, text="Expense", font=("Arial", 16, "bold"), background="#f9f9f9").pack(pady=10)
+
+    tree_frame2 = ttk.Frame(win)
+    tree_frame2.pack(fill="both", expand=True, padx=10, pady=(10, 20))
+
+    tree_scroll2 = ttk.Scrollbar(tree_frame2)
+    tree_scroll2.pack(side="right", fill="y")
+
+    tree2 = ttk.Treeview(tree_frame2, yscrollcommand=tree_scroll2.set, columns=("type", "date", "amount", "desc"), show="headings", height = 7)
+    tree2.pack(fill="both", expand=True)
+    tree_scroll2.config(command=tree2.yview)
+
+    tree2.heading("type", text="Type")
+    tree2.heading("date", text="Date")
+    tree2.heading("amount", text="Amount (₹)")
+    tree2.heading("desc", text="Description")
+
+    tree2.column("type", width=80, anchor="center")
+    tree2.column("date", width=100, anchor="center")
+    tree2.column("amount", width=100, anchor="center")
+    tree2.column("desc", width=200, anchor="w")
+
+    for amount, desc, _, date in load_transactions(username, "expense"):
+        tree2.insert("", "end", values=("Expense", date, f"₹{amount:.2f}", desc))
+
 
 def getFullSummary():
     # Fetch income data
