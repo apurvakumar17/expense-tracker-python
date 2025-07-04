@@ -1,0 +1,18 @@
+Id,Username,Type,Amount,Description,Category,Date
+1,aa,income,510.0,Tuesday Market,,2025-07-01
+2,aa,expense,101.0,Market,Fruits,2025-07-01
+3,aa,income,50000.0,GP,,2025-07-01
+4,aa,expense,11.0,today,Electronics,2025-07-02
+5,aa,expense,398.0,test,test,2025-07-02
+6,qq,income,50000.0,Salary,,2025-07-02
+7,qq,expense,505.0,test,Food Test,2025-07-02
+8,aa,expense,5.0,test2,catefory test2,2025-07-02
+9,aa,expense,3000.0,Fee,Fee,2025-07-02
+10,aa,expense,45000.0,,,2025-07-02
+11,aa,income,12000.0,,,2025-07-04
+12,aa,expense,550.0,tution fee,fee,2025-07-04
+13,aa,expense,445.0,try123,,2025-07-04
+14,aa,income,101.0,Prize,,2025-06-29
+15,aa,expense,10000.0,loss,,2025-07-04
+16,aa,income,10000.0,profit,,2025-07-04
+17,aa,expense,10000.0,loss,,2025-07-29
