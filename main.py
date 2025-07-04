@@ -185,7 +185,7 @@ def view_transactions(username):
     for amount, desc, cat, date in load_transactions(username, "expense"):
         ttk.Label(win, text=f"{date} - ₹{amount} ({desc} - {cat})").pack()
 
-def DrawSummary():
+def getFullSummary():
     # Fetch income data
     cursor.execute("SELECT date, amount FROM transactions WHERE type='income' ")
     income_data = cursor.fetchall()
@@ -222,6 +222,35 @@ def DrawSummary():
     plt.legend()
     plt.tight_layout()
     plt.show()
+
+def getFilterSummary():
+    
+
+
+def DrawSummary():
+    summaryWindow=tk.Tk()
+    summaryWindow.geometry("300x300")
+
+    summaryFullBtn=tk.Button(summaryWindow,text="Full summary",font=("Arial", 12, "bold"),command=getFullSummary)
+    summaryFullBtn.grid(row=0,column=0)
+
+    filterLabel=tk.Label(summaryWindow,text="Get by date",font=("Arial", 12, "bold"))
+    filterLabel.grid(row=1,column=0)
+    fromLabel=tk.Label(summaryWindow,text="From",font=("Arial", 12, "bold"))
+    fromLabel.grid(row=2,column=0)
+    toLabel=tk.Label(summaryWindow,text="to",font=("Arial", 12, "bold"))
+    toLabel.grid(row=2,column=1)
+
+    fromEntry=tk.Entry(summaryWindow,font=("Arial", 12, "bold"))
+    fromEntry.grid(row=3,column=0)
+    toEntry=tk.Entry(summaryWindow,font=("Arial", 12, "bold"))
+    toEntry.grid(row=3,column=1)
+
+    summaryFilterBtn=tk.Button(summaryWindow,text="Filter summary",font=("Arial", 12, "bold"),command=getFilterSummary)
+    summaryFilterBtn.grid(row=4,columnspan=2)
+
+    summaryWindow.mainloop()
+    
 
 
 
