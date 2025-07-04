@@ -6,6 +6,7 @@ import hashlib
 import os
 import sqlite3
 import datetime
+from tkcalendar import DateEntry
 
 # ---------- SQLite Setup ----------
 conn = sqlite3.connect("expenses.db")
@@ -223,68 +224,71 @@ def getFullSummary():
     plt.tight_layout()
     plt.show()
 
-def getFilterSummary():
-    fromDate=tk.fromEntry.get()
-    toDate=tk.toEntry.get()
-    if not fromDate or not toDate:
-        messagebox.showerror("Error","Please enter both dates")
-
-    cursor.execute("SELECT date, amount FROM transactions WHERE type='income' and date between ? and ? ",(fromDate,toDate))
-    income_data = cursor.fetchall()
-
-    # Fetch expense data
-    cursor.execute("SELECT date, amount FROM transactions WHERE type='expense' and date between ? and ? ",(fromDate,toDate) )
-    expense_data = cursor.fetchall()
-
-    # Prepare data for plotting
-    income_dates = [row[0] for row in income_data]
-    income_amounts = [row[1] for row in income_data]
-
-    expense_dates = [row[0] for row in expense_data]
-    expense_amounts = [row[1] for row in expense_data]
-
-    # Create figure
-    plt.figure(figsize=(10, 6))
-
-    # Plot income
-    if income_data:
-        plt.bar(income_dates, income_amounts, label="Income", color="green")
-    # Plot expense
-    if expense_data:
-        plt.bar(expense_dates,expense_amounts, label="Expense", color="red")
-
-    plt.title("Income & Expense Over Time")
-    plt.xlabel("Date")
-    plt.ylabel("Amount (₹)")
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
 
 def DrawSummary():
-    summaryWindow=tk.Tk()
-    summaryWindow.geometry("300x300")
+    summaryWindow = tk.Toplevel()
+    summaryWindow.title("Summary")
+    summaryWindow.geometry("400x350")
+    summaryWindow.configure(bg="#f9f9f9")
+    summaryWindow.resizable(False, False)
 
-    summaryFullBtn=tk.Button(summaryWindow,text="Full summary",font=("Arial", 12, "bold"),command=getFullSummary)
-    summaryFullBtn.grid(row=0,column=0)
+    container = tk.Frame(summaryWindow, bg="#f9f9f9")
+    container.pack(expand=True, fill="both", padx=20, pady=20)
 
-    filterLabel=tk.Label(summaryWindow,text="Get by date",font=("Arial", 12, "bold"))
-    filterLabel.grid(row=1,column=0)
-    fromLabel=tk.Label(summaryWindow,text="From",font=("Arial", 12, "bold"))
-    fromLabel.grid(row=2,column=0)
-    toLabel=tk.Label(summaryWindow,text="to",font=("Arial", 12, "bold"))
-    toLabel.grid(row=2,column=1)
+    ttk.Label(container, text="Summary Report", font=("Arial", 16, "bold"), background="#f9f9f9").pack(pady=(0, 15))
+    ttk.Button(container, text="📊 View Full Summary", command=getFullSummary).pack(pady=5)
 
-    fromEntry=tk.Entry(summaryWindow,font=("Arial", 12, "bold"))
-    fromEntry.grid(row=3,column=0)
-    toEntry=tk.Entry(summaryWindow,font=("Arial", 12, "bold"))
-    toEntry.grid(row=3,column=1)
+    # Date Filter Label
+    ttk.Label(container, text="Filter by Date", font=("Arial", 12, "bold"), background="#f9f9f9").pack(pady=(20, 5))
 
-    summaryFilterBtn=tk.Button(summaryWindow,text="Filter summary",font=("Arial", 12, "bold"),command=getFilterSummary)
-    summaryFilterBtn.grid(row=4,columnspan=2)
+    # Date Picker Fields
+    form_frame = tk.Frame(container, bg="#f9f9f9")
+    form_frame.pack()
 
-    summaryWindow.mainloop()
+    ttk.Label(form_frame, text="From:", background="#f9f9f9").grid(row=0, column=0, padx=5, pady=5, sticky="e")
+    from_entry = DateEntry(form_frame, width=15, background='darkblue', foreground='white', date_pattern='yyyy-mm-dd')
+    from_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    ttk.Label(form_frame, text="To:", background="#f9f9f9").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+    to_entry = DateEntry(form_frame, width=15, background='darkblue', foreground='white', date_pattern='yyyy-mm-dd')
+    to_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    def get_filtered():
+        from_date = from_entry.get()
+        to_date = to_entry.get()
+        if not from_date or not to_date:
+            messagebox.showerror("Error", "Please enter both dates.")
+            return
+
+        cursor.execute("SELECT date, amount FROM transactions WHERE type='income' and date BETWEEN ? AND ?", (from_date, to_date))
+        income_data = cursor.fetchall()
+
+        cursor.execute("SELECT date, amount FROM transactions WHERE type='expense' and date BETWEEN ? AND ?", (from_date, to_date))
+        expense_data = cursor.fetchall()
+
+        if not income_data and not expense_data:
+            messagebox.showinfo("Info", "No data to display.")
+            return
+
+        income_dates = [row[0] for row in income_data]
+        income_amounts = [row[1] for row in income_data]
+        expense_dates = [row[0] for row in expense_data]
+        expense_amounts = [row[1] for row in expense_data]
+
+        plt.figure(figsize=(10, 6))
+        if income_data:
+            plt.bar(income_dates, income_amounts, label="Income", color="green")
+        if expense_data:
+            plt.bar(expense_dates, expense_amounts, label="Expense", color="red")
+        plt.title("Income & Expense (Filtered)")
+        plt.xlabel("Date")
+        plt.ylabel("Amount (₹)")
+        plt.xticks(rotation=45)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+    ttk.Button(container, text="🔍 Filter Summary", command=get_filtered).pack(pady=15)
     
 
 
